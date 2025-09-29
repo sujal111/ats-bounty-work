@@ -1,23 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import "./styles.css";
+import Dashboard from "./components/Dashboard";
+import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) setLoggedIn(true);
+  }, []);
+
+  if (!loggedIn) {
+    return showRegister ? (
+      <div>
+        <Register onRegister={() => setShowRegister(false)} />
+        <p style={{ textAlign: "center" }}>
+          Already have an account? <button className="action" onClick={() => setShowRegister(false)}>Login</button>
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      </div>
+    ) : (
+      <div>
+        <Login onLogin={() => setLoggedIn(true)} />
+        <p style={{ textAlign: "center" }}>
+          Don't have an account? <button className="action" onClick={() => setShowRegister(true)}>Register</button>
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <header>
+        LLM Evaluation Platform
+        <button
+          style={{ float: "right", background: "#7d00e0", color: "white", border: "none", padding: "0.5rem 1rem", borderRadius: "8px", cursor: "pointer" }}
+          onClick={() => {
+            localStorage.removeItem("token");
+            window.location.reload();
+          }}
         >
-          Learn React
-        </a>
+          Logout
+        </button>
       </header>
+      <Dashboard />
     </div>
   );
 }
